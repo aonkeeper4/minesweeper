@@ -414,7 +414,7 @@ impl fmt::Display for Minesweeper {
             writeln!(fmt, "|")?;
         }
 
-        // display top border
+        // display bottom border
         write!(fmt, "{}", horiz_border)?;
         Ok(())
     }
