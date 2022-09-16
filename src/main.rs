@@ -433,7 +433,7 @@ struct GameSettings {
 // takes the position the arg should be in, the arg name,
 // a function/closure to validate it with, and an err msg
 // to display if the validation fails.
-fn get_arg<T, E: fmt::Debug>(pos: usize, arg_name: &str, validation_fn: fn(String) -> Result<T, E>, err_msg: &str) -> T {
+fn get_arg<T, E>(pos: usize, arg_name: &str, validation_fn: fn(String) -> Result<T, E>, err_msg: &str) -> T {
     // get arg at position pos, erring if absent
     let nth_arg = std::env::args() // get command line args
         .nth(pos) // get arg in pos position
