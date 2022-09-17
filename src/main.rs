@@ -83,7 +83,7 @@ impl fmt::Display for VariantParseError {
 }
 
 impl MinesweeperVariant {
-    // fn to parse a variant from a string
+    // fn to parse a variant from a str
     fn from_str(x: &str) -> Result<Self, VariantParseError> {
         match x.to_lowercase().as_str() {
             "normal" => Ok(Self::Normal),
