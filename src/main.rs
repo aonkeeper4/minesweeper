@@ -2,6 +2,7 @@ use rand::prelude::*;
 use std::collections::HashSet;
 use std::fmt;
 use std::io::stdin;
+use std::str::FromStr;
 
 // type alias for coordinates in the minesweeper grid
 type Position = (usize, usize);
@@ -82,10 +83,14 @@ impl fmt::Display for VariantParseError {
     }
 }
 
-impl MinesweeperVariant {
-    // fn to parse a variant from a str
-    fn from_str(x: &str) -> Result<Self, VariantParseError> {
-        match x.to_lowercase().as_str() {
+// impl ability to parse from str
+impl FromStr for MinesweeperVariant {
+    // err to return if parsing fails
+    type Err = VariantParseError;
+
+    // fn to parse variant from str
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
             "normal" => Ok(Self::Normal),
             "far-normal" => Ok(Self::FarNormal),
             "knight-paths" => Ok(Self::KnightPaths),
@@ -455,7 +460,7 @@ fn get_game_settings() -> GameSettings {
         board_width: get_arg(1, "board_width", |x| x.parse::<usize>(), "unable to parse to usize"), // board width
         board_height: get_arg(2, "board_height", |x| x.parse::<usize>(), "unable to parse to usize"), // board height
         num_mines: get_arg(3, "num_mines", |x| x.parse::<usize>(), "unable to parse to usize"), // number of mines
-        variant: get_arg(4, "variant", |x| MinesweeperVariant::from_str(x.as_str()), concat!( // game variant
+        variant: get_arg(4, "variant", |x| x.parse::<MinesweeperVariant>(), concat!( // game variant
             "invalid variant: allowed variants include:",
             "\n\tnormal",
             "\n\tfar-normal",
