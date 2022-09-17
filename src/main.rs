@@ -449,7 +449,7 @@ fn get_arg<T, E>(pos: usize, arg_name: &str, validation_fn: fn(String) -> Result
         .nth(pos) // get arg in pos position
         .unwrap_or_else(|| panic!("parameter {} expected in position {}", arg_name, pos)); // err if not found
     // validate arg and show err_msg on fail
-    (validation_fn)(nth_arg) // validate arg
+    validation_fn(nth_arg) // validate arg
         .unwrap_or_else(|_| panic!("invalid string found for parameter {}: {}", arg_name, err_msg)) // err with err_msg on fail
 }
 
