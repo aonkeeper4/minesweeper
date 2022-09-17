@@ -14,14 +14,19 @@ fn random_range(start: usize, stop: usize) -> usize {
 
 // fn to get input from user
 fn get_input(msg: &str) -> String {
+    // create empty buffer to read input into
     let mut input_string = String::new();
+    // read input until it contains something
     while input_string.trim().is_empty() {
+        // display prompt message
         println!("{}", msg);
+        // read input into buffer and if err, clear and try again
         if stdin().read_line(&mut input_string).is_err() {
             input_string.clear();
             println!("Error reading input.");
         }
     }
+    // return valid input
     input_string
 }
 
