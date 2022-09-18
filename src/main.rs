@@ -163,19 +163,20 @@ impl Minesweeper {
     // fn to generate neighbors (as specified by the game's variant) for a specific cell on the grid
     fn neighbors(&self, x: usize, y: usize) -> Vec<Position> {
         // get neighbor offsets for game's variant
+        use MinesweeperVariant::{BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal, FarOrthogonal, KnightPaths, Normal, Orthogonal};
         let dirs: Vec<(i64, i64)> = match self.variant {
-            MinesweeperVariant::Normal => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square
-            MinesweeperVariant::FarNormal => (-2..=2).flat_map(|x| (-2..=2).map(move |y| (x, y))).collect(), // all mines in 5x5 area around square
-            MinesweeperVariant::KnightPaths => vec![(-1, -2), (-1, 2), (1, -2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)], // all mines in knight paths from square
-            MinesweeperVariant::BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly above
-            MinesweeperVariant::BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly below
-            MinesweeperVariant::BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly left
-            MinesweeperVariant::BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly right
-            MinesweeperVariant::Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 1)
-            MinesweeperVariant::FarOrthogonal => vec![(-2, 0), (2, 0), (0, -2), (0, 2), (-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 2)
-            MinesweeperVariant::Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 1)
-            MinesweeperVariant::FarDiagonal => vec![(-2, -2), (2, 2), (-2, 2), (2, -2), (-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 2)
-            MinesweeperVariant::Doubled => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square but orthogonally adj squares counted twice
+            Normal => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square
+            FarNormal => (-2..=2).flat_map(|x| (-2..=2).map(move |y| (x, y))).collect(), // all mines in 5x5 area around square
+            KnightPaths => vec![(-1, -2), (-1, 2), (1, -2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)], // all mines in knight paths from square
+            BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly above
+            BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly below
+            BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly left
+            BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly right
+            Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 1)
+            FarOrthogonal => vec![(-2, 0), (2, 0), (0, -2), (0, 2), (-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 2)
+            Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 1)
+            FarDiagonal => vec![(-2, -2), (2, 2), (-2, 2), (2, -2), (-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 2)
+            Doubled => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square but orthogonally adj squares counted twice
         };
         // generate list of neighbors
         let mut neighbors = Vec::<Position>::new(); // init
