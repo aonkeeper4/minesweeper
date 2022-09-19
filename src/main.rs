@@ -287,7 +287,7 @@ impl Minesweeper {
         // check the parsed result
         match parse_result {
             // if parsing was a success and move is within bounds, return the parsed move
-            Ok(parsed_move) if (1..=bound).contains(&parsed_move) => Ok(parsed_move-1),
+            Ok(parsed_move) if (1..=bound).contains(&parsed_move) => Ok(parsed_move - 1),
             // else if there was an error
             Err(_) => match raw.to_lowercase().as_str() {
                 // if the raw string that we wanted to parse was a quit instruction, then quit
