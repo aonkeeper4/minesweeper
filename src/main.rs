@@ -190,10 +190,10 @@ impl Minesweeper {
                 continue;
             }
             // convert neighbor x and y to grid position (this should never fail)
-            let tried_nx: usize = nx.try_into().unwrap_or_default();
-            let tried_ny: usize = ny.try_into().unwrap_or_default();
+            let nx: usize = nx.try_into().unwrap_or_else(|_| unreachable!());
+            let ny: usize = ny.try_into().unwrap_or_else(|_| unreachable!());
             // push neighbor to list
-            neighbors.push((tried_nx, tried_ny));
+            neighbors.push((nx, ny));
         }
         // return neighbors
         neighbors
