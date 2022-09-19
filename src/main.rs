@@ -483,7 +483,7 @@ fn main() {
     // get game settings from cmd line args
     let settings = get_game_settings();
     // init game with these settings
-    let mut minesweeper: Minesweeper = Minesweeper::new(settings);
+    let mut minesweeper = Minesweeper::new(settings);
     // play game
     minesweeper.play();
 }
