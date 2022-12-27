@@ -20,7 +20,7 @@ fn get_input(msg: &str) -> String {
     // read input until it contains something
     while input_string.trim().is_empty() {
         // display prompt message
-        println!("{}", msg);
+        println!("{msg}");
         // read input into buffer and if err, clear and try again
         if stdin().read_line(&mut input_string).is_err() {
             input_string.clear();
@@ -59,18 +59,18 @@ impl fmt::Display for MoveValidationError {
 // enum to store all minesweeper variants
 #[derive(PartialEq)]
 enum MinesweeperVariant {
-    Normal, // all mines in 3x3 area around square
-    FarNormal, // all mines in 5x5 area around square
-    KnightPaths, // all mines in knight paths from square
-    BlindUp, // all mines in 3x3 area around square excl square directly above
-    BlindDown, // all mines in 3x3 area around square excl square directly below
-    BlindLeft, // all mines in 3x3 area around square excl square directly left
-    BlindRight, // all mines in 3x3 area around square excl square directly right
-    Orthogonal, // all mines orthogonally adjacent to square (distance 1)
+    Normal,        // all mines in 3x3 area around square
+    FarNormal,     // all mines in 5x5 area around square
+    KnightPaths,   // all mines in knight paths from square
+    BlindUp,       // all mines in 3x3 area around square excl square directly above
+    BlindDown,     // all mines in 3x3 area around square excl square directly below
+    BlindLeft,     // all mines in 3x3 area around square excl square directly left
+    BlindRight,    // all mines in 3x3 area around square excl square directly right
+    Orthogonal,    // all mines orthogonally adjacent to square (distance 1)
     FarOrthogonal, // all mines orthogonally adjacent to square (distance 2)
-    Diagonal, // all mines diagonally adjacent to square (distance 1)
-    FarDiagonal, // all mines diagonally adjacent to square (distance 2)
-    Doubled, // all mines in 3x3 area around square but orthogonally adj squares counted twice
+    Diagonal,      // all mines diagonally adjacent to square (distance 1)
+    FarDiagonal,   // all mines diagonally adjacent to square (distance 2)
+    Doubled,       // all mines in 3x3 area around square but orthogonally adj squares counted twice
 }
 
 // err to raise if parse from str fails
@@ -110,14 +110,14 @@ impl FromStr for MinesweeperVariant {
 
 // struct to store the minesweeper game
 struct Minesweeper {
-    width: usize, // width of board
-    height: usize, // height of board
-    mines: HashSet<Position>, // set to store mines
-    open_squares: HashSet<Position>, // set to store current open positions
+    width: usize,                       // width of board
+    height: usize,                      // height of board
+    mines: HashSet<Position>,           // set to store mines
+    open_squares: HashSet<Position>,    // set to store current open positions
     flagged_squares: HashSet<Position>, // set to store current flagged positions
-    all_squares: HashSet<Position>, // set to store all possible positions
-    state: GameState, // game state (playing, won, lost)
-    variant: MinesweeperVariant, // variant
+    all_squares: HashSet<Position>,     // set to store all possible positions
+    state: GameState,                   // game state (playing, won, lost)
+    variant: MinesweeperVariant,        // variant
 }
 
 impl Minesweeper {
@@ -126,13 +126,17 @@ impl Minesweeper {
         Self {
             width: settings.board_width,
             height: settings.board_height,
-            mines: { // generate mines
+            mines: {
+                // generate mines
                 // make an empty set of positions
                 let mut mines = HashSet::<Position>::new();
                 // repeat until have enough mines
                 while mines.len() < settings.num_mines {
                     // generate random mine
-                    let mine: Position = (random_range(0, settings.board_width), random_range(0, settings.board_height));
+                    let mine: Position = (
+                        random_range(0, settings.board_width),
+                        random_range(0, settings.board_height),
+                    );
                     // add to mines unless mine is already there
                     if mines.contains(&mine) {
                         continue;
@@ -144,7 +148,8 @@ impl Minesweeper {
             },
             open_squares: HashSet::<Position>::new(), // init
             flagged_squares: HashSet::<Position>::new(), // init
-            all_squares: { // generate all positions
+            all_squares: {
+                // generate all positions
                 let mut all_squares = HashSet::<Position>::new();
                 // loop through all positions and add them to the set
                 for x in 0..settings.board_width {
@@ -163,37 +168,90 @@ impl Minesweeper {
     // fn to generate neighbors (as specified by the game's variant) for a specific cell on the grid
     fn neighbors(&self, x: usize, y: usize) -> Vec<Position> {
         // get neighbor offsets for game's variant
-        use MinesweeperVariant::{BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal, FarOrthogonal, KnightPaths, Normal, Orthogonal};
-        let dirs: Vec<(i64, i64)> = match self.variant {
-            Normal => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square
-            FarNormal => (-2..=2).flat_map(|x| (-2..=2).map(move |y| (x, y))).collect(), // all mines in 5x5 area around square
-            KnightPaths => vec![(-1, -2), (-1, 2), (1, -2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)], // all mines in knight paths from square
+        use MinesweeperVariant::*;
+        let dirs: Vec<(i32, i32)> = match self.variant {
+            Normal => vec![
+                (-1, 0),
+                (1, 0),
+                (0, -1),
+                (0, 1),
+                (-1, -1),
+                (-1, 1),
+                (1, -1),
+                (1, 1),
+            ], // all mines in 3x3 area around square
+            FarNormal => (-2..=2)
+                .flat_map(|x| (-2..=2).map(move |y| (x, y)))
+                .collect(), // all mines in 5x5 area around square
+            KnightPaths => vec![
+                (-1, -2),
+                (-1, 2),
+                (1, -2),
+                (1, 2),
+                (-2, -1),
+                (-2, 1),
+                (2, -1),
+                (2, 1),
+            ], // all mines in knight paths from square
             BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly above
             BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly below
             BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly left
             BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly right
             Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 1)
-            FarOrthogonal => vec![(-2, 0), (2, 0), (0, -2), (0, 2), (-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 2)
+            FarOrthogonal => vec![
+                (-2, 0),
+                (2, 0),
+                (0, -2),
+                (0, 2),
+                (-1, 0),
+                (1, 0),
+                (0, -1),
+                (0, 1),
+            ], // all mines orthogonally adjacent to square (distance 2)
             Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 1)
-            FarDiagonal => vec![(-2, -2), (2, 2), (-2, 2), (2, -2), (-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 2)
-            Doubled => vec![(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square but orthogonally adj squares counted twice
+            FarDiagonal => vec![
+                (-2, -2),
+                (2, 2),
+                (-2, 2),
+                (2, -2),
+                (-1, -1),
+                (1, 1),
+                (-1, 1),
+                (1, -1),
+            ], // all mines diagonally adjacent to square (distance 2)
+            Doubled => vec![
+                (-1, 0),
+                (1, 0),
+                (0, -1),
+                (0, 1),
+                (-1, 0),
+                (1, 0),
+                (0, -1),
+                (0, 1),
+                (-1, -1),
+                (-1, 1),
+                (1, -1),
+                (1, 1),
+            ], // all mines in 3x3 area around square but orthogonally adj squares counted twice
         };
         // generate list of neighbors
         let mut neighbors = Vec::<Position>::new(); // init
-        // loop over neighbor offsets, destructure into individual x and y offsets
+                                                    // loop over neighbor offsets, destructure into individual x and y offsets
         for &(dx, dy) in &dirs {
             // apply offsets to cell specified to get neighbor
-            let nx = x as i64 + dx;
-            let ny = y as i64 + dy;
+            let nx = x as i32 + dx;
+            let ny = y as i32 + dy;
             // check if generated neighbor lies outside game's borders and if so ignore it
-            if nx < 0 || nx >= self.width as i64 || ny < 0 || ny >= self.height as i64 {
+            if nx < 0 || nx >= self.width as i32 || ny < 0 || ny >= self.height as i32 {
                 continue;
             }
             // convert neighbor x and y to grid position (this should never fail)
-            let nx: usize = nx.try_into().unwrap_or_else(|_| unreachable!());
-            let ny: usize = ny.try_into().unwrap_or_else(|_| unreachable!());
+            let new_pos = match (nx.try_into(), ny.try_into()) {
+                (Ok(nx), Ok(ny)) => (nx, ny),
+                _ => panic!("Invalid board position from neighbour calculation: ({nx}, {ny})"),
+            };
             // push neighbor to list
-            neighbors.push((nx, ny));
+            neighbors.push(new_pos);
         }
         // return neighbors
         neighbors
@@ -294,7 +352,7 @@ impl Minesweeper {
                 "q" | "quit" => {
                     println!("Quitting...");
                     std::process::exit(0);
-                },
+                }
                 // else, we do not recognise user's input and return an error
                 _ => Err(MoveValidationError),
             },
@@ -326,7 +384,7 @@ impl Minesweeper {
     }
 
     // fn to get a valid move type from the player
-    fn get_move_type(&self) -> MoveType {
+    fn get_move_type() -> MoveType {
         // get raw input from player
         let move_type = get_input("Enter move type (open/flag/quit): ");
         // check input
@@ -339,12 +397,12 @@ impl Minesweeper {
             "q" | "quit" => {
                 println!("Quitting...");
                 std::process::exit(0);
-            },
+            }
             // invalid - try again
             _ => {
                 println!("Invalid move type.");
-                self.get_move_type()
-            },
+                Self::get_move_type()
+            }
         }
     }
 
@@ -367,7 +425,7 @@ impl Minesweeper {
             // display number of mines near if > 0, else opened square
             let mines_value: usize = self.mines_near(x, y);
             if mines_value > 0 {
-                write!(fmt, "{} ", mines_value)?;
+                write!(fmt, "{mines_value} ")?;
             } else {
                 write!(fmt, "  ")?;
             }
@@ -381,20 +439,20 @@ impl Minesweeper {
     // fn to play a game of minesweeper
     fn play(&mut self) {
         // display board
-        println!("{}", self);
+        println!("{self}");
         // while we are playing (game not lost or won)
         while self.state == GameState::Playing {
             // get move pos from player
             let (x, y) = self.get_move_pos();
             // get move type from player
-            let move_type = self.get_move_type();
+            let move_type = Self::get_move_type();
             // open or flag square based on move type
             match move_type {
                 MoveType::Open => self.open(x, y),
                 MoveType::Flag => self.flag(x, y),
             };
             // display board
-            println!("{}", self);
+            println!("{self}");
             // check if won
             self.determine_win();
         }
@@ -410,7 +468,7 @@ impl fmt::Display for Minesweeper {
         let horiz_border = "+".to_owned() + &"-".repeat(self.width * 2 + 1) + "+\n";
 
         // display top border
-        write!(fmt, "{}", horiz_border)?;
+        write!(fmt, "{horiz_border}")?;
 
         // for each row
         for y in 0..self.height {
@@ -426,7 +484,7 @@ impl fmt::Display for Minesweeper {
         }
 
         // display bottom border
-        write!(fmt, "{}", horiz_border)?;
+        write!(fmt, "{horiz_border}")?;
         Ok(())
     }
 }
@@ -444,38 +502,66 @@ struct GameSettings {
 // takes the position the arg should be in, the arg name,
 // a function/closure to validate it with, and an err msg
 // to display if the validation fails.
-fn get_arg<T, E>(pos: usize, arg_name: &str, validation_fn: fn(String) -> Result<T, E>, err_msg: &str) -> T {
+fn get_arg<T, E>(
+    pos: usize,
+    arg_name: &str,
+    validation_fn: fn(String) -> Result<T, E>,
+    err_msg: &str,
+) -> T {
     // get arg at position pos, erring if absent
-    let nth_arg = std::env::args() // get command line args
-        .nth(pos) // get arg in pos position
-        .unwrap_or_else(|| panic!("parameter {} expected in position {}", arg_name, pos)); // err if not found
-    // validate arg and show err_msg on fail
+    let nth_arg =
+        std::env::args() // get command line args
+            .nth(pos) // get arg in pos position
+            .unwrap_or_else(|| panic!("parameter {arg_name} expected in position {pos}")); // err if not found
+                                                                                           // validate arg and show err_msg on fail
     validation_fn(nth_arg) // validate arg
-        .unwrap_or_else(|_| panic!("invalid string found for parameter {}: {}", arg_name, err_msg)) // err with err_msg on fail
+        .unwrap_or_else(|_| panic!("invalid string found for parameter {arg_name}: {err_msg}"))
+    // err with err_msg on fail
 }
 
 // fn to build a GameSettings object from cmd line args
 fn get_game_settings() -> GameSettings {
     // build GameSettings object
     GameSettings {
-        board_width: get_arg(1, "board_width", |x| x.parse::<usize>(), "unable to parse to usize"), // board width
-        board_height: get_arg(2, "board_height", |x| x.parse::<usize>(), "unable to parse to usize"), // board height
-        num_mines: get_arg(3, "num_mines", |x| x.parse::<usize>(), "unable to parse to usize"), // number of mines
-        variant: get_arg(4, "variant", |x| x.parse::<MinesweeperVariant>(), concat!( // game variant
-            "invalid variant: allowed variants include:",
-            "\n\tnormal",
-            "\n\tfar-normal",
-            "\n\tknight-paths",
-            "\n\tblind-up",
-            "\n\tblind-down",
-            "\n\tblind-left",
-            "\n\tblind-right",
-            "\n\torthogonal",
-            "\n\tfar-orthogonal",
-            "\n\tdiagonal",
-            "\n\tfar-diagonal",
-            "\n\tdoubled",
-        )),
+        board_width: get_arg(
+            1,
+            "board_width",
+            |x| x.parse::<usize>(),
+            "unable to parse to usize",
+        ), // board width
+        board_height: get_arg(
+            2,
+            "board_height",
+            |x| x.parse::<usize>(),
+            "unable to parse to usize",
+        ), // board height
+        num_mines: get_arg(
+            3,
+            "num_mines",
+            |x| x.parse::<usize>(),
+            "unable to parse to usize",
+        ), // number of mines
+        variant: get_arg(
+            4,
+            "variant",
+            |x| x.parse::<MinesweeperVariant>(),
+            concat!(
+                // game variant
+                "invalid variant: allowed variants include:",
+                "\n\tnormal",
+                "\n\tfar-normal",
+                "\n\tknight-paths",
+                "\n\tblind-up",
+                "\n\tblind-down",
+                "\n\tblind-left",
+                "\n\tblind-right",
+                "\n\torthogonal",
+                "\n\tfar-orthogonal",
+                "\n\tdiagonal",
+                "\n\tfar-diagonal",
+                "\n\tdoubled",
+            ),
+        ),
     }
 }
 
