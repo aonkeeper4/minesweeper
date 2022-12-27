@@ -168,8 +168,8 @@ impl Minesweeper {
     // fn to generate neighbors (as specified by the game's variant) for a specific cell on the grid
     fn neighbors(&self, x: usize, y: usize) -> Vec<Position> {
         // get neighbor offsets for game's variant
-        use MinesweeperVariant::*;
-        let dirs: Vec<(i32, i32)> = match self.variant {
+        use MinesweeperVariant::{BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal, FarOrthogonal, KnightPaths, Normal, Orthogonal};
+        let dirs: Vec<(i64, i64)> = match self.variant {
             Normal => vec![
                 (-1, 0),
                 (1, 0),
@@ -239,10 +239,10 @@ impl Minesweeper {
                                                     // loop over neighbor offsets, destructure into individual x and y offsets
         for &(dx, dy) in &dirs {
             // apply offsets to cell specified to get neighbor
-            let nx = x as i32 + dx;
-            let ny = y as i32 + dy;
+            let nx = x as i64 + dx;
+            let ny = y as i64 + dy;
             // check if generated neighbor lies outside game's borders and if so ignore it
-            if nx < 0 || nx >= self.width as i32 || ny < 0 || ny >= self.height as i32 {
+            if nx < 0 || nx >= self.width as i64 || ny < 0 || ny >= self.height as i64 {
                 continue;
             }
             // convert neighbor x and y to grid position (this should never fail)
