@@ -168,7 +168,10 @@ impl Minesweeper {
     // fn to generate neighbors (as specified by the game's variant) for a specific cell on the grid
     fn neighbors(&self, x: usize, y: usize) -> Vec<Position> {
         // get neighbor offsets for game's variant
-        use MinesweeperVariant::{BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal, FarOrthogonal, KnightPaths, Normal, Orthogonal};
+        use MinesweeperVariant::{
+            BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal,
+            FarOrthogonal, KnightPaths, Normal, Orthogonal,
+        };
         let dirs: Vec<(i64, i64)> = match self.variant {
             // all mines in 3x3 area around square
             Normal => vec![
@@ -180,7 +183,7 @@ impl Minesweeper {
                 (-1, 1),
                 (1, -1),
                 (1, 1),
-            ], 
+            ],
             // all mines in 5x5 area around square
             FarNormal => (-2..=2)
                 .flat_map(|x| (-2..=2).map(move |y| (x, y)))
@@ -195,17 +198,17 @@ impl Minesweeper {
                 (-2, 1),
                 (2, -1),
                 (2, 1),
-            ], 
+            ],
             // all mines in 3x3 area around square excl square directly above
-            BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)],
             // all mines in 3x3 area around square excl square directly below
-            BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)],
             // all mines in 3x3 area around square excl square directly left
-            BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)],
             // all mines in 3x3 area around square excl square directly right
-            BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)],
             // all mines orthogonally adjacent to square (distance 1)
-            Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], 
+            Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)],
             // all mines orthogonally adjacent to square (distance 2)
             FarOrthogonal => vec![
                 (-2, 0),
@@ -216,9 +219,9 @@ impl Minesweeper {
                 (1, 0),
                 (0, -1),
                 (0, 1),
-            ], 
+            ],
             // all mines diagonally adjacent to square (distance 1)
-            Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], 
+            Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)],
             // all mines diagonally adjacent to square (distance 2)
             FarDiagonal => vec![
                 (-2, -2),
@@ -248,7 +251,7 @@ impl Minesweeper {
         };
         // generate list of neighbors
         let mut neighbors = Vec::<Position>::new(); // init
-        // loop over individual x and y offsets
+                                                    // loop over individual x and y offsets
         for &(dx, dy) in &dirs {
             // apply offsets to cell specified to get neighbor
             let nx = x as i64 + dx;
@@ -542,7 +545,7 @@ fn get_game_settings() -> GameSettings {
             "board_width",
             |x| x.parse::<usize>(),
             "unable to parse to usize",
-        ), 
+        ),
         // board height
         board_height: get_arg(
             2,
