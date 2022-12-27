@@ -170,6 +170,7 @@ impl Minesweeper {
         // get neighbor offsets for game's variant
         use MinesweeperVariant::{BlindDown, BlindLeft, BlindRight, BlindUp, Diagonal, Doubled, FarDiagonal, FarNormal, FarOrthogonal, KnightPaths, Normal, Orthogonal};
         let dirs: Vec<(i64, i64)> = match self.variant {
+            // all mines in 3x3 area around square
             Normal => vec![
                 (-1, 0),
                 (1, 0),
@@ -179,10 +180,12 @@ impl Minesweeper {
                 (-1, 1),
                 (1, -1),
                 (1, 1),
-            ], // all mines in 3x3 area around square
+            ], 
+            // all mines in 5x5 area around square
             FarNormal => (-2..=2)
                 .flat_map(|x| (-2..=2).map(move |y| (x, y)))
-                .collect(), // all mines in 5x5 area around square
+                .collect(),
+            // all mines in knight paths from square
             KnightPaths => vec![
                 (-1, -2),
                 (-1, 2),
@@ -192,12 +195,18 @@ impl Minesweeper {
                 (-2, 1),
                 (2, -1),
                 (2, 1),
-            ], // all mines in knight paths from square
-            BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly above
-            BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly below
-            BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly left
-            BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], // all mines in 3x3 area around square excl square directly right
-            Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], // all mines orthogonally adjacent to square (distance 1)
+            ], 
+            // all mines in 3x3 area around square excl square directly above
+            BlindUp => vec![(-1, 0), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            // all mines in 3x3 area around square excl square directly below
+            BlindDown => vec![(-1, 0), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            // all mines in 3x3 area around square excl square directly left
+            BlindLeft => vec![(1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            // all mines in 3x3 area around square excl square directly right
+            BlindRight => vec![(-1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)], 
+            // all mines orthogonally adjacent to square (distance 1)
+            Orthogonal => vec![(-1, 0), (1, 0), (0, -1), (0, 1)], 
+            // all mines orthogonally adjacent to square (distance 2)
             FarOrthogonal => vec![
                 (-2, 0),
                 (2, 0),
@@ -207,8 +216,10 @@ impl Minesweeper {
                 (1, 0),
                 (0, -1),
                 (0, 1),
-            ], // all mines orthogonally adjacent to square (distance 2)
-            Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], // all mines diagonally adjacent to square (distance 1)
+            ], 
+            // all mines diagonally adjacent to square (distance 1)
+            Diagonal => vec![(-1, -1), (1, 1), (-1, 1), (1, -1)], 
+            // all mines diagonally adjacent to square (distance 2)
             FarDiagonal => vec![
                 (-2, -2),
                 (2, 2),
@@ -218,7 +229,8 @@ impl Minesweeper {
                 (1, 1),
                 (-1, 1),
                 (1, -1),
-            ], // all mines diagonally adjacent to square (distance 2)
+            ],
+            // all mines in 3x3 area around square but orthogonally adj squares counted twice
             Doubled => vec![
                 (-1, 0),
                 (1, 0),
@@ -232,11 +244,11 @@ impl Minesweeper {
                 (-1, 1),
                 (1, -1),
                 (1, 1),
-            ], // all mines in 3x3 area around square but orthogonally adj squares counted twice
+            ],
         };
         // generate list of neighbors
         let mut neighbors = Vec::<Position>::new(); // init
-                                                    // loop over neighbor offsets, destructure into individual x and y offsets
+        // loop over individual x and y offsets
         for &(dx, dy) in &dirs {
             // apply offsets to cell specified to get neighbor
             let nx = x as i64 + dx;
@@ -513,7 +525,8 @@ fn get_arg<T, E>(
         std::env::args() // get command line args
             .nth(pos) // get arg in pos position
             .unwrap_or_else(|| panic!("parameter {arg_name} expected in position {pos}")); // err if not found
-                                                                                           // validate arg and show err_msg on fail
+
+    // validate arg and show err_msg on fail
     validation_fn(nth_arg) // validate arg
         .unwrap_or_else(|_| panic!("invalid string found for parameter {arg_name}: {err_msg}"))
     // err with err_msg on fail
@@ -523,30 +536,33 @@ fn get_arg<T, E>(
 fn get_game_settings() -> GameSettings {
     // build GameSettings object
     GameSettings {
+        // board width
         board_width: get_arg(
             1,
             "board_width",
             |x| x.parse::<usize>(),
             "unable to parse to usize",
-        ), // board width
+        ), 
+        // board height
         board_height: get_arg(
             2,
             "board_height",
             |x| x.parse::<usize>(),
             "unable to parse to usize",
-        ), // board height
+        ),
+        // number of mines
         num_mines: get_arg(
             3,
             "num_mines",
             |x| x.parse::<usize>(),
             "unable to parse to usize",
-        ), // number of mines
+        ),
+        // game variant
         variant: get_arg(
             4,
             "variant",
             |x| x.parse::<MinesweeperVariant>(),
             concat!(
-                // game variant
                 "invalid variant: allowed variants include:",
                 "\n\tnormal",
                 "\n\tfar-normal",
